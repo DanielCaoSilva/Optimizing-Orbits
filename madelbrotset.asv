@@ -1,0 +1,26 @@
+clear all;
+close all;
+clc;
+
+%Mandelbrot Set
+
+for i = 1:100
+    for j
+end
+z = [];
+z(1) = complex(-.2,.5);
+c = complex(.01,.02);
+
+z = mS(z,1,c,1000);
+
+
+plot(real(z),imag(z));
+function [z] = mS(z,i,c,k)
+    z(i+1) = z(i)*z(i)+c;
+    k = k - 1;
+    if(k > 0)
+        [z]= mS(z,i+1,c,k);
+    end
+    return;
+end
+
