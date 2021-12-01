@@ -2,16 +2,19 @@ clear all;
 close all;
 clc;
 
+format long
 %Daniel Silva 
 %The Minimum Distance Between two Orbits 
 
 %Parameters - (A,P,phi) 
 param = [10,2, pi/8;
           4,1,-pi/7];
+% param = [5,15-10*sqrt(2), pi/8;
+%          2,6-4*sqrt(2), -pi/7];
 
 %Orbits
-%t = linspace(1,.1,1000);
-t = 0:.01:10;
+%t = linspace(0,.1,1000);
+t = -10:.1:10;
 tlength = length(t);
 for i = 1:2
     trigMat(:,:,i) = [cos(param(i,3)),sin(param(i,3));
@@ -22,8 +25,9 @@ for i = 1:2
 end
 
 %Distance
-indexj = -111;
-indexi = -111;
+minDex = [0,0];
+indexj = -11111;
+indexi = -11111;
 temp = 000;
 [t1,t2] = meshgrid(t);
 dist = 0.5.*((orbits(1,:,1)-orbits(1,:,2)).^2+(orbits(2,:,1)-orbits(2,:,2)).^2);
@@ -38,6 +42,9 @@ for i = 1:tlength
             indexi = i;
             temp = d(j,i);
         end
+        if(d(j,i) <= 0.068680989346037)
+            minDex = [minDex; t(i),t(j)];
+        end
     end
 end
 
@@ -48,6 +55,7 @@ contourGrid(:,:,2) = t2;
 contourGrid(:,:,3) = d;
 
 save contGRID.mat contourGrid -v7.3;
+
 
 %Plots
 subplot(2,2,1);
