@@ -9,6 +9,7 @@ f = @(x1,x2) x1.^4 + x2.^4 + 12*x1^2 + 6*x2.^2 -x1.*x2 -x1-x2;
 g.c1 = @(x1,x2) -x1 - x2 +6;
 g.c2 = @(x1,x2) -2*x1 +x2 +3;
 
+global x1 x2 u1 u2 s1 s2
 syms x1 x2 u1 u2 s1 s2
 L = @(x1,x2,u1,u2,s1,s2) f(x1,x2) + u1.*(g.c1(x1,x2) + s1) + u2.*(g.c2(x1,x2) + s2);
 Lsym = sym(L);
@@ -19,11 +20,17 @@ stationarity = [diff(Lsym,x1);
                 %diff(Lsym,s1);
                 %diff(Lsym,s2)];
 
-kktSys.case1 = matlabFunction(subForZero(stationarity,u1,u2));
-kktSys.case2 = matlabFunction(subForZero(stationarity,u1,s2));
-kktSys.case3 = matlabFunction(subForZero(stationarity,u2,s1));
-kktSys.case4 = matlabFunction(subForZero(stationarity,s1,s2));
-% fsolve(kktSys.case1,[0,0,0,0])
+% kktSys.case1 = matlabFunction(subForZero(stationarity,u1,u2));
+% kktSys.case2 = matlabFunction(subForZero(stationarity,u1,s2));
+% kktSys.case3 = matlabFunction(subForZero(stationarity,u2,s1));
+% kktSys.case4 = matlabFunction(subForZero(stationarity,s1,s2));
+
+kktSys.case1 = (subForZero(stationarity,u1,u2));
+kktSys.case2 = (subForZero(stationarity,u1,s2));
+kktSys.case3 = (subForZero(stationarity,u2,s1));
+kktSys.case4 = (subForZero(stationarity,s1,s2));
+
+test = vpasolve(kktSys.case1,[0,0,0,0]);
 % feval(kktSys.case1,0,0,0,0)
             
 
@@ -112,6 +119,3 @@ F = [2*x(1)-2+2*x(1)*x(4)+2*x(1)*x(5);
     x(1)^2+x(2)^2+x(3)^2-4; 
     x(1)^2-4*x(2)];
 end
-
-
-
