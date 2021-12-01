@@ -25,17 +25,17 @@ y1t1 = double(subs(orbits(2,1),t,t1));
 y2t2 = double(subs(orbits(2,2),t,t2));
 dist = 0.5.*((x1t1-x2t2).^2 + (y1t1-y2t2).^2);
 figure;
-contourf(t1,t2,dist,70);
+contourf(t1,t2,dist,20);
 
 d = 0.5.*((subs(orbits(1,1),t,ta)-subs(orbits(1,2),t,tb)).^2 + (subs(orbits(2,1),t,ta)-subs(orbits(2,2),t,tb)).^2);
-gd = gradient(d)
-gradFunc = matlabFunction(gd);
-distFunc = matlabFunction(d);
-save gradient.mat gd d gradFunc distFunc -v7.3;
+gd = simplify(gradient(d),'Steps',100)
+
+%gd = matfile('gradientProj.mat');
+gdFunc = matlabFunction(gd);
+dFunc = matlabFunction(d);
+save gradientProj.mat gd d gdFunc dFunc -v7.3;
+
 %steepestdescentold(d)
-
-
-
 
 figure;
 ezplot(orbits(1,1),orbits(2,1));
