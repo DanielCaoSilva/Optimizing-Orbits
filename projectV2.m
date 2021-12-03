@@ -28,12 +28,14 @@ figure;
 contourf(t1,t2,dist,20);
 
 d = 0.5.*((subs(orbits(1,1),t,ta)-subs(orbits(1,2),t,tb)).^2 + (subs(orbits(2,1),t,ta)-subs(orbits(2,2),t,tb)).^2);
-gd = simplify(gradient(d),'Steps',100)
+gd = simplify(gradient(d),'Steps',100);
+h = simplify(hessian(d),'Steps',100);
 
 %gd = matfile('gradientProj.mat');
 gdFunc = matlabFunction(gd);
 dFunc = matlabFunction(d);
-save gradientProj.mat gd d gdFunc dFunc -v7.3;
+hFunc = matlabFunction(h);
+save gradientProj.mat gd d h gdFunc dFunc hFunc -v7.3;
 
 %steepestdescentold(d)
 
