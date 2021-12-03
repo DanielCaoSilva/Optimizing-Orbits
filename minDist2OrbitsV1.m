@@ -58,6 +58,8 @@ save contGRID.mat contourGrid -v7.3;
 
 
 %Plots
+fig = figure;
+filename = 'testgif.gif';
 subplot(2,2,1);
 contourf(t1,t2,d);
 subplot(2,2,2);
@@ -79,5 +81,15 @@ for i=1:tlength
     hold off;
     axis([-10 5 -4 7]);
     pause(.001)
+    drawnow
+    frame = getframe(fig);
+    im = frame2im(frame);
+    [imind,cm] = rgb2ind(im,256);
+    if i == 1
+        imwrite(imind,cm,filename,'gif','LoopCount',Inf,'DelayTime',.1);
+    else 
+        imwrite(imind,cm,filename,'gif','WriteMode','append'); 
+    end 
+    
 end
 
