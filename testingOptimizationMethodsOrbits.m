@@ -5,12 +5,14 @@ clc;
 %Daniel Silva 
 %Comparing different optimization methods
 
-%Load the Gradient and Distance Function
+%Load the Gradient, Distance and Hessian Functions
 obj = load("gradientProj.mat");
 gradient = obj.gd;
 dist = obj.d;
+hessian = obj.h;
 gradFunc = obj.gdFunc;
 distFunc = obj.dFunc;
+hessFunc = obj.hFunc;
 contourObj = load("contGRID.mat");
 contourGRID = contourObj.contourGrid;
 
@@ -20,40 +22,80 @@ syms t ta tb;
 initial_start = [2;2];
 x_k = initial_start;
 
-[x_kArm] = SteepestDescentWithArmijo(1,0.01,[2;2],gradFunc,distFunc);
+[x_sd] = SteepestDescentWithArmijo(0.25,0.001,[0;0],gradFunc,distFunc);
+%[x_newton] = NewtonsMethodHigherDims(1,0.001,[0;0],gradFunc,hessFunc,distFunc);
 
+
+mi = 75:125;
 figure;
-contourf(contourGRID(:,:,1),contourGRID(:,:,2),contourGRID(:,:,3));
+contourf(contourGRID(mi,mi,1),contourGRID(mi,mi,2),contourGRID(mi,mi,3));
 hold on;
-plot(x_kArm(1,:),x_kArm(2,:),'-k');
+plot(x_sd(1,:),x_sd(2,:),'-k');
+title(["SD starting [0;0] epsil = 0.001 END:" num2str(x_sd(1,end)) num2str(x_sd(2,end)) ]);
+% hold on;
+% plot(x_newton(1,:),x_newton(2,:),'-r');
+hold off;
+
+[x_sd] = SteepestDescentWithArmijo(0.25,0.001,[-2;-1],gradFunc,distFunc);
+figure;
+contourf(contourGRID(mi,mi,1),contourGRID(mi,mi,2),contourGRID(mi,mi,3));
+hold on;
+plot(x_sd(1,:),x_sd(2,:),'-k');
+title(["SD starting [-2;-1] epsil = 0.001 END:" num2str(x_sd(1,end)) num2str(x_sd(2,end)) ]);
 hold off;
 
 figure;
-res = 10;
-iter = -res:1:res;
+res = 9;
+iter = -res:.1:res;
 resLength = length(iter);
-store = [];
+store = zeros(resLength*resLength,5);
+k = 1;
 for i = iter
     for j = iter
-        x_k = SteepestDescentWithArmijo(1,0.01,[i;j],gradFunc,distFunc);
-        store = [store ; x_k(1,end),x_k(2,end),distFunc(x_k(1,end),x_k(2,end)),i,j];
+        x_k = SteepestDescentWithArmijo(1,0.001,[i;j],gradFunc,distFunc);
+        %x_n = NewtonsMethodHigherDims(1,0.001,[i;j],gradFunc,hessFunc,distFunc);
+        store(k,:) = [x_k(1,end),x_k(2,end),distFunc(x_k(1,end),x_k(2,end)),i,j];%,x_n(1,end),x_n(2,end),distFunc(x_n(1,end),x_n(2,end))];
+        %storeN = [storeN ; x_n(1,end),x_n(2,end),distFunc(x_k(1,end),x_k(2,end)),i,j];
+        k = k + 1;
         plot(x_k(1,:),x_k(2,:));
         hold on;
     end
 end
 hold off;
 
-intColors = zeros(100,1);
-temp=store(1,1:2);
 
 
-[C,ia,ic] = unique(store(:,1:2),'rows');
+[C,ia,ic] = uniquetol(store(:,1:2),1e-2,'ByRows',true);
+%[Cn,ian,icn] = uniquetol(store(:,6:7),1e-2,'ByRows',true);
 store = [store ic];
-cMp = flip(reshape(ic,resLength,resLength)');
+cMp = flip(reshape(ic,resLength,resLength));
+%cMpn = flip(reshape(icn,resLength,resLength));
 
 figure;
-image(cMp,'CDataMapping','scaled');
+xP = [-res res];
+yp = [res -res];
+im = image(xP,yp,cMp,'CDataMapping','scaled');
+%colormap prism
+%colormap hsv
+colormap summer
+set(gca,'YDir','normal')
 colorbar()
+
+
+% hold on;
+% contour(contourGRID(:,:,1),contourGRID(:,:,2),contourGRID(:,:,3),'k','Fill','off','LineWidth',1);
+% hold off;
+
+% figure;
+% xP = [-res res];
+% im = image(xP,xP,cMpn,'CDataMapping','scaled');
+% colormap prism
+% colorbar()
+%hold on;
+%contour(contourGRID(:,:,1),contourGRID(:,:,2),contourGRID(:,:,3),'k','Fill','off','LineWidth',3);
+%hold off;
+
+
 
     
 
